@@ -1,0 +1,33 @@
+policies:
+  - name: mark-s3-bucket-to-enable-versioning
+    resource: s3 
+    mode:
+        type: cloudtrail
+        role: arn:aws:iam::{account_id}:role/CustodianLambdaRole
+        events:
+            - CreateBucket 
+    filters:
+        - "tag:c7n_enable_bucket_verioning": absent
+    actions:
+        - type: mark-for-op
+          tag: c7n_enable_bucket_verioning
+          op: toggle-versioning
+          hours: 1
+
+  - name: check-marked-s3-bucket-to-enable-versioning
+    resource: s3 
+    filters:
+        - type: marked-for-op
+          tag: c7n_enable_bucket_verioning
+          op: toggle-versioning
+        - not:
+          - type: value
+            key: Versioning.Status
+            value: Enabled
+    mode:
+        type: periodic
+        role: arn:aws:iam::{account_id}:role/CustodianLambdaRole
+        schedule: "rate(5 minutes)"
+    actions:
+      - type: toggle-versioning
+

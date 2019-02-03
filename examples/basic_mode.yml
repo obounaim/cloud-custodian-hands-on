@@ -1,0 +1,8 @@
+policies:
+  - name: terminate-tagged-ec2-instances
+    resource: ec2
+    filters:
+      - "tag:c7n": present 
+    actions:
+      - terminate 
+

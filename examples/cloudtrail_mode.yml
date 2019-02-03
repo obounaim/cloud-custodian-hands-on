@@ -1,0 +1,12 @@
+policies:
+  - name: enable-s3-bucket-sse-encryption
+    resource: s3 
+    mode:
+        type: cloudtrail
+        role: arn:aws:iam::{account_id}:role/CustodianLambdaRole
+        events:
+            - CreateBucket 
+    actions:
+           - type: set-bucket-encryption
+             crypto: AES256
+
